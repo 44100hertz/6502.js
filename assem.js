@@ -49,21 +49,21 @@ const lex = {
     op_arg: (arg) => {
         const clean_arg = arg.replace(/\s+/, ' ');
 
-        const patterns = {
-            indrx: /[(](.*), ?x[)]/u,
-            indry: /[(](.*)[)] ?, ?y/u,
-            indr : /[(](.*)[)]/,
-            addrx: /(.*) ?, ?x/u,
-            addry: /(.*) ?, ?y/u,
-            immed: /#(.*)/,
-            addr : /(.*)/,
-            none : /^\s*$/,
-        };
+        const patterns = [
+            ['indrx', /[(](.*), ?x[)]/u],
+            ['indry', /[(](.*)[)] ?, ?y/u],
+            ['ind',   /[(](.*)[)]/],
+            ['addrx', /(.*) ?, ?x/u],
+            ['addry', /(.*) ?, ?y/u],
+            ['immed', /#(.*)/],
+            ['add',   /(.*)/],
+            ['none',  /^\s*$/],
+        ];
 
-        for (const match in patterns) {
-            const pat = patterns[match].exec(arg);
+        for (const match of patterns) {
+            const pat = match[1].exec(arg);
             if (pat) {
-                return [match, pat[1]];
+                return [match[0], pat[1]];
             }
         }
 
