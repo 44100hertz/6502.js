@@ -9,7 +9,7 @@ const outpath = 'test.bin';
 const read_file = (err, input) => {
     if (err) { throw err; }
 
-    lex(input);
+    lex.multi_line(input);
 
     let buf = [];
     const buf8 = Uint8Array.from(buf);
@@ -18,25 +18,57 @@ const read_file = (err, input) => {
     });
 };
 
-const lex = (code) => {
-    let line_iter = /(.*?)(;.*\n|\n)/umg;
-    let line;
-
-    while ((line = line_iter.exec(code)) !== null) {
-
-        // Matching Rules
+const lex = {
+    line: (line) => {
+        // Matching Rules:
         // label:  start of line, or first word ending in :
         // opcode: indented or ".word" not ending in :
         // arg:    the rest of the line :^)
-
-        const [, label, opcode, arg] = /^(\w+|\s+\w+(?=:)|)[\s:\.]*(\w*)(.*?)$/u
-              .exec(line[1])
+        const [, label, opcode, arg] = /^(\w+|\s+\w+(?=:)|)[\s:\.]*(\w*)(.*)$/u
+              .exec(line)
               .map(s => s.trim());
 
         if (label || opcode) {
             console.log(label, '|', opcode, '|', arg);
+            if (arg && codes[opcode.toUpperCase()]) {
+                const [kind, data] = lex.op_arg(arg);
+                console.log('    > arg:', kind, data);
+            }
         }
-    }
+    },
+
+    multi_line: (code) => {
+        let line_iter = /(.*?)(;.*\n|\n)/umg;
+        let line;
+
+        while ((line = line_iter.exec(code))) {
+            lex.line(line[1]);
+        }
+    },
+
+    op_arg: (arg) => {
+        const clean_arg = arg.replace(/\s+/, ' ');
+
+        const patterns = {
+            indrx: /[(](.*), ?x[)]/u,
+            indry: /[(](.*)[)] ?, ?y/u,
+            indr : /[(](.*)[)]/,
+            addrx: /(.*) ?, ?x/u,
+            addry: /(.*) ?, ?y/u,
+            immed: /#(.*)/,
+            addr : /(.*)/,
+            none : /^\s*$/,
+        };
+
+        for (const match in patterns) {
+            const pat = patterns[match].exec(arg);
+            if (pat) {
+                return [match, pat[1]];
+            }
+        }
+
+        return ['undefined', arg];
+    },
 };
 
 fs.readFile(inpath, read_file);
