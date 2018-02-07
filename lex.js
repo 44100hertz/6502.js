@@ -2,8 +2,9 @@ const codes = require('./codes');
 
 const lex = {
     multi_line: (code) => {
+        let lineno = 0;
         return lex.line_array(code)
-            .map(line => lex.line(line));
+            .map(line => lex.line(line, ++lineno));
     },
 
     line_array: (code) => {
@@ -16,7 +17,7 @@ const lex = {
         return lines;
     },
 
-    line: (line) => {
+    line: (line, lineno) => {
         // Matching Rules:
         // label:  start of line, or first word ending in :
         // opcode: indented or ".word" not ending in :
@@ -27,7 +28,7 @@ const lex = {
 
         const [arg_type, arg_data] = lex.op_arg(arg);
 
-        return {label, code, arg, arg_type, arg_data};
+        return {label, code, arg, arg_type, arg_data, lineno};
     },
 
     op_arg: (arg) => {
