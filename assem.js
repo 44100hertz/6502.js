@@ -1,25 +1,4 @@
-"use strict";
-
-const fs = require('fs');
-const lex = require('./lex');
 const codes = require('./codes');
-
-const inpath = 'test.asm';
-const outpath = 'test.bin';
-
-const read_file = (err, input) => {
-    if (err) { throw err; }
-
-    const lexed = lex.multi_line(input);
-    const {program, labels} = assem.program(lexed);
-
-    console.log(program);
-    console.log(labels);
-
-    // fs.writeFile(outpath, buf8, (err) => {
-    //     if (err) { throw err; }
-    // });
-};
 
 const assem = {
     program: (lexed) => {
@@ -53,6 +32,9 @@ const assem = {
             return {code, value};
         }
 
+        if (/^a$/i.test(line.arg_data)) {
+        }
+
         // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
         if (/^addr/.test(line.arg_type)) {
             if (!value) {
@@ -62,10 +44,9 @@ const assem = {
                 'addr', value < 0x100 ? 'zero' : 'abs');
 
             const code = code_set[arg_type];
-            if (!code) {
-                return `unsupported parameter type: ${arg_type}`;
+            if (code) {
+                return {code, value};
             }
-            return {code, value};
         }
 
         return `unsupported parameter type for ${line.code}: ${line.arg_type}`;
@@ -84,4 +65,4 @@ const assem = {
     },
 };
 
-fs.readFile(inpath, read_file);
+module.exports = assem;
