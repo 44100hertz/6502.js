@@ -2,6 +2,24 @@
 
 const codes = require('./codes');
 
+const widths = {
+    none:  1,
+    accum: 1,
+
+    immed: 2,
+    zero:  2,
+    zerox: 2,
+    zeroy: 2,
+    rela:  2,
+
+    abs:   3,
+    absx:  3,
+    absy:  3,
+    indrx: 3,
+    indry: 3,
+    indr:  3,
+};
+
 const assem = {
     program: (lexed) => {
         const labels = {};
@@ -26,29 +44,30 @@ const assem = {
             return `unknown opcode or directive: ${line.code}`;
         }
 
-        const code = code_set[line.arg_type];
+        const arg_type = code_set.rela ? 'rela' : line.arg_type;
+        const code = code_set[arg_type];
         const value = assem.value(line.arg_data);
 
         // 1:1 lexing -> assembly works for many things
         if (code) {
-            return {code, value};
+            return {code, value, width: widths[arg_type]};
         }
 
         // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
-        if (/^addr/.test(line.arg_type)) {
+        if (/^addr/.test(arg_type)) {
             if (!value) {
                 return `could not parse value: ${line.arg_data}`;
             }
-            const arg_type = line.arg_type.replace(
+            const alt_arg_type = arg_type.replace(
                 'addr', value < 0x100 ? 'zero' : 'abs');
 
-            const code = code_set[arg_type];
+            const code = code_set[alt_arg_type];
             if (code) {
-                return {code, value};
+                return {code, value, width: widths[alt_arg_type]};
             }
         }
 
-        return `unsupported parameter type for ${line.code}: ${line.arg_type}`;
+        return `unsupported parameter type for ${line.code}: ${arg_type}`;
     },
 
     value: (value) => {

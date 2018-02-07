@@ -7,6 +7,7 @@ main2:
   clc
   ror a                         ; comment
   ror A                         ; comment
+  ror   A                         ; comment
   ror aardvark
   lda #100
   lda #100 ; comment2
@@ -29,3 +30,5 @@ main2:
   jmp (16)
   jmp 16
   jmp main
+
+  bne main
