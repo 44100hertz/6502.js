@@ -11,9 +11,10 @@ const read_file = (err, input) => {
     if (err) { throw err; }
 
     const lexed = lex.multi_line(input);
-    const bin = assem.program(lexed);
+    const {program, labels} = assem.program(lexed);
 
-    bin.forEach(v => console.log(v));
+    console.log(program);
+    console.log(labels);
 
     // fs.writeFile(outpath, buf8, (err) => {
     //     if (err) { throw err; }
@@ -22,11 +23,19 @@ const read_file = (err, input) => {
 
 const assem = {
     program: (lexed) => {
-        return lexed
-            .map(line => assem.line(line));
+        const labels = {};
+
+        const program = lexed
+            .map(line => assem.program_line(line, labels));
+
+        return {program, labels};
     },
 
-    line: (line) => {
+    program_line: (line, labels) => {
+        if (line.label) {
+            labels[line.label] = line.lineno;
+        }
+
         if (!line.code) {
             return null;
         }
@@ -41,7 +50,7 @@ const assem = {
 
         // 1:1 lexing -> assembly works for many things
         if (code) {
-            return [code, value];
+            return {code, value};
         }
 
         // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
@@ -56,10 +65,10 @@ const assem = {
             if (!code) {
                 return `unsupported parameter type: ${arg_type}`;
             }
-            return [code, value];
+            return {code, value};
         }
 
-        return `unsupported parameter type: ${line.arg_type}`;
+        return `unsupported parameter type for ${line.code}: ${line.arg_type}`;
     },
 
     value: (value) => {
@@ -70,7 +79,7 @@ const assem = {
             return parseInt(value.substr(1), 2);
         default:
             const num = parseInt(value);
-            return num ? num : 'unimplemeted; label';
+            return num ? num : value;
         }
     },
 };

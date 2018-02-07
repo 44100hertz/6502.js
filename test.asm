@@ -4,6 +4,7 @@ data1: .dw $100, $10, $0
 main ; comment1
 main2:
   main3:
+  clc
   lda #100
   lda #100 ; comment2
   sta $0
@@ -21,7 +22,7 @@ main2:
   sta ( $100, x )
   sta ( $100 ) , y
 
-;; jmp ($10)
- ;; jmp (16)
-  ;; jmp 16
-   ;; jmp main
+  jmp ($10)
+  jmp (16)
+  jmp 16
+  jmp main
