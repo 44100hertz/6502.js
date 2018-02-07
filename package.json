@@ -1,0 +1,24 @@
+{
+  "name": "6502",
+  "version": "0.0.0",
+  "description": "6502 assembler",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hertz4/6502.js.git"
+  },
+  "keywords": [
+    "6502",
+    "assembler",
+    "assembly"
+  ],
+  "author": "Sam Pagenkopf",
+  "license": "Zlib",
+  "bugs": {
+    "url": "https://github.com/hertz4/6502.js/issues"
+  },
+  "homepage": "https://github.com/hertz4/6502.js#readme"
+}
