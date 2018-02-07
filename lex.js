@@ -32,14 +32,12 @@ const lex = {
     },
 
     op_arg: (arg) => {
-        const clean_arg = arg.replace(/\s+/, ' ');
-
         const patterns = [
-            ['indrx', /[(](.*), ?x[)]/i],
-            ['indry', /[(](.*)[)] ?, ?y/i],
+            ['indrx', /[(](.*),\s*x\s*[)]/i],
+            ['indry', /[(](.*)[)]\s*,\s*y/i],
             ['indr',  /[(](.*)[)]/],
-            ['addrx', /(.*) ?, ?x/i],
-            ['addry', /(.*) ?, ?y/i],
+            ['addrx', /(.*)\s*,\s*x/i],
+            ['addry', /(.*)\s*,\s*y/i],
             ['immed', /#(.*)/],
             ['addr',  /(.+)/],
         ];
