@@ -39,7 +39,7 @@ const lex = {
             ['addrx', /(.*)\s*,\s*x/i],
             ['addry', /(.*)\s*,\s*y/i],
             ['immed', /#(.*)/],
-            ['accum', /^a$()/],
+            ['accum', /^a$()/i],
             ['addr',  /(.+)/],
         ];
 
