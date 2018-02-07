@@ -21,8 +21,6 @@ main2:
   sta ( $100, x )
   sta ( $100 ) , y
 
-  sta ( 5 * 5, x )
-  sta ( 20 / 50 ) , y
 ;; jmp ($10)
  ;; jmp (16)
   ;; jmp 16

@@ -21,14 +21,13 @@ const lex = {
         // label:  start of line, or first word ending in :
         // opcode: indented or ".word" not ending in :
         // arg:    the rest of the line :^)
-        const [, label, opcode, arg] = /^(\w+|\s+\w+(?=:)|)[\s:\.]*(\w*)(.*)$/
+        const [, label, code, arg] = /^(\w+|\s+\w+(?=:)|)[\s:\.]*(\w*)(.*)$/
               .exec(line)
               .map(s => s.trim());
 
-        const [kind, data] = arg && codes[opcode.toUpperCase()] ?
-              lex.op_arg(arg) : [null, null];
+        const [arg_type, arg_data] = lex.op_arg(arg);
 
-        return {label, opcode, arg, kind, data};
+        return {label, code, arg, arg_type, arg_data};
     },
 
     op_arg: (arg) => {
@@ -47,7 +46,7 @@ const lex = {
         for (const match of patterns) {
             const pat = match[1].exec(arg);
             if (pat) {
-                return [match[0], pat[1]];
+                return [match[0], pat[1]].map(s => s.trim());
             }
         }
 
