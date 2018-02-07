@@ -27,11 +27,13 @@ const assem = {
     },
 
     line: (line) => {
+        if (!line.code) {
+            return null;
+        }
         const code_set = codes[line.code.toUpperCase()];
 
         if (!code_set) {
-            // unknown opcode
-            return null;
+            return 'unknown opcode or directive';
         }
 
         const code = code_set[line.arg_type];
@@ -45,8 +47,7 @@ const assem = {
         // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
         if (/^addr/.test(line.arg_type)) {
             if (!value) {
-                // error; expected value
-                return null;
+                return 'expected value';
             }
 
             const arg_type = line.arg_type.replace(
@@ -54,14 +55,12 @@ const assem = {
 
             const code = code_set[arg_type];
             if (!code) {
-                // error: unsupported parameter type
-                return null;
+                return 'unsupported parameter';
             }
             return [code, value];
         }
 
-        // wrong parameter type
-        return null;
+        return 'unsupported parameter';
     },
 
     value: (value) => {
