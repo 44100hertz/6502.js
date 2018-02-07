@@ -24,4 +24,4 @@ const read_file = (err, input) => {
     // });
 };
 
-fs.read_file(inpath, read_file);
+fs.readFile(inpath, read_file);
