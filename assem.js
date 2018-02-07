@@ -27,13 +27,41 @@ const assem = {
     },
 
     line: (line) => {
-        const code = codes[line.code.toUpperCase()];
-        if (code) {
-            const value = assem.value(line.arg_data);
-            return [code[line.arg_type], value];
-        } else {
+        const code_set = codes[line.code.toUpperCase()];
+
+        if (!code_set) {
+            // unknown opcode
             return null;
         }
+
+        const code = code_set[line.arg_type];
+        const value = assem.value(line.arg_data);
+
+        // 1:1 lexing -> assembly works for many things
+        if (code) {
+            return [code, value];
+        }
+
+        // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
+        if (/^addr/.test(line.arg_type)) {
+            if (!value) {
+                // error; expected value
+                return null;
+            }
+
+            const arg_type = line.arg_type.replace(
+                'addr', value < 0x100 ? 'zero' : 'abs');
+
+            const code = code_set[arg_type];
+            if (!code) {
+                // error: unsupported parameter type
+                return null;
+            }
+            return [code, value];
+        }
+
+        // wrong parameter type
+        return null;
     },
 
     value: (value) => {
