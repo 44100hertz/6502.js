@@ -37,11 +37,11 @@ const lex = {
         const patterns = [
             ['indrx', /[(](.*), ?x[)]/i],
             ['indry', /[(](.*)[)] ?, ?y/i],
-            ['ind',   /[(](.*)[)]/],
+            ['indr',  /[(](.*)[)]/],
             ['addrx', /(.*) ?, ?x/i],
             ['addry', /(.*) ?, ?y/i],
             ['immed', /#(.*)/],
-            ['add',   /(.+)/],
+            ['addr',  /(.+)/],
         ];
 
         for (const match of patterns) {
