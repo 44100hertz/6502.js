@@ -1,10 +1,10 @@
-const codes = require('./codes');
+'use strict';
 
 const lex = {
     multi_line: (code) => {
         let lineno = 0;
         return lex.line_array(code)
-            .map(line => lex.line(line, ++lineno));
+            .map((line) => lex.line(line, ++lineno));
     },
 
     line_array: (code) => {
@@ -24,7 +24,7 @@ const lex = {
         // arg:    the rest of the line :^)
         const [, label, code, arg] = /^(\w+|\s+\w+(?=:)|)[\s:\.]*(\w*)(.*)$/
               .exec(line)
-              .map(s => s.trim());
+              .map((s) => s.trim());
 
         const [arg_type, arg_data] = lex.op_arg(arg);
 
@@ -46,7 +46,7 @@ const lex = {
         for (const match of patterns) {
             const pat = match[1].exec(arg);
             if (pat) {
-                return [match[0], pat[1]].map(s => s.trim());
+                return [match[0], pat[1]].map((s) => s.trim());
             }
         }
 

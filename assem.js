@@ -1,3 +1,5 @@
+'use strict';
+
 const codes = require('./codes');
 
 const assem = {
@@ -5,7 +7,7 @@ const assem = {
         const labels = {};
 
         const program = lexed
-            .map(line => assem.program_line(line, labels));
+            .map((line) => assem.program_line(line, labels));
 
         return {program, labels};
     },
@@ -32,9 +34,6 @@ const assem = {
             return {code, value};
         }
 
-        if (/^a$/i.test(line.arg_data)) {
-        }
-
         // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
         if (/^addr/.test(line.arg_type)) {
             if (!value) {
@@ -53,7 +52,7 @@ const assem = {
     },
 
     value: (value) => {
-        switch(value[0]) {
+        switch (value[0]) {
         case '$':
             return parseInt(value.substr(1), 16);
         case '%':
