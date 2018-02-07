@@ -33,7 +33,7 @@ const assem = {
         const code_set = codes[line.code.toUpperCase()];
 
         if (!code_set) {
-            return 'unknown opcode or directive';
+            return `unknown opcode or directive: ${line.code}`;
         }
 
         const code = code_set[line.arg_type];
@@ -47,20 +47,19 @@ const assem = {
         // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
         if (/^addr/.test(line.arg_type)) {
             if (!value) {
-                return 'expected value';
+                return `could not parse value: ${line.arg_data}`;
             }
-
             const arg_type = line.arg_type.replace(
                 'addr', value < 0x100 ? 'zero' : 'abs');
 
             const code = code_set[arg_type];
             if (!code) {
-                return 'unsupported parameter';
+                return `unsupported parameter type: ${arg_type}`;
             }
             return [code, value];
         }
 
-        return 'unsupported parameter';
+        return `unsupported parameter type: ${line.arg_type}`;
     },
 
     value: (value) => {
