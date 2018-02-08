@@ -3,21 +3,9 @@
 const codes = require('./codes');
 
 const widths = {
-    none:  1,
-    accum: 1,
-
-    immed: 2,
-    zero:  2,
-    zerox: 2,
-    zeroy: 2,
-    rela:  2,
-
-    abs:   3,
-    absx:  3,
-    absy:  3,
-    indrx: 3,
-    indry: 3,
-    indr:  3,
+    none:  1, accum: 1,
+    immed: 2, zero:  2, zerox: 2, zeroy: 2, rela:  2,
+    abs:   3, absx:  3, absy:  3, indrx: 3, indry: 3, indr:  3,
 };
 
 const assem = {
@@ -27,6 +15,9 @@ const assem = {
     program_line: (line) => {
         const decoded = assem.decode_line(line);
         decoded.label = line.label;
+        if (!decoded.width) {
+            decoded.width = 0;
+        }
         return decoded;
     },
 
@@ -51,11 +42,12 @@ const assem = {
 
         // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
         if (/^addr/.test(arg_type)) {
-            if (!value) {
-                return {err: `could not parse value: ${line.arg_data}`};
-            }
             const zero_type = arg_type.replace('addr', 'zero');
             const abs_type = arg_type.replace('addr', 'abs');
+
+            if (!value) {
+                return {err: `could not determine width: ${line.arg_data}`};
+            }
 
             const alt_arg_type = (value && value < 0x100 && code_set[zero_type]) ?
                   zero_type : abs_type;
