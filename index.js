@@ -13,11 +13,10 @@ const read_file = (err, input) => {
     }
 
     const lexed = lex.multi_line(input);
-    const {program, labels} = assem.program(lexed);
+    const program = assem.program(lexed);
 
     console.log(lexed);
     console.log(program);
-    console.log(labels);
 
     // fs.writeFile(outpath, buf8, (err) => {
     //     if (err) { throw err; }

@@ -21,27 +21,23 @@ const widths = {
 };
 
 const assem = {
-    program: (lexed) => {
-        const labels = {};
+    program: (lexed) => lexed
+        .map((line) => assem.program_line(line)),
 
-        const program = lexed
-            .map((line) => assem.program_line(line, labels));
-
-        return {program, labels};
+    program_line: (line) => {
+        const decoded = assem.decode_line(line);
+        decoded.label = line.label;
+        return decoded;
     },
 
-    program_line: (line, labels) => {
-        if (line.label) {
-            labels[line.label] = line.lineno;
-        }
-
+    decode_line: (line) => {
         if (!line.code) {
-            return null;
+            return {};
         }
         const code_set = codes[line.code.toUpperCase()];
 
         if (!code_set) {
-            return `unknown opcode or directive: ${line.code}`;
+            return {err: `unknown opcode or directive: ${line.code}`};
         }
 
         const arg_type = code_set.rela ? 'rela' : line.arg_type;
@@ -56,7 +52,7 @@ const assem = {
         // Handle addr -> zero|abs, addrx -> zerox|absx, etc.
         if (/^addr/.test(arg_type)) {
             if (!value) {
-                return `could not parse value: ${line.arg_data}`;
+                return {err: `could not parse value: ${line.arg_data}`};
             }
             const zero_type = arg_type.replace('addr', 'zero');
             const abs_type = arg_type.replace('addr', 'abs');
@@ -71,7 +67,7 @@ const assem = {
             }
         }
 
-        return `unsupported parameter type for ${line.code}: ${arg_type}`;
+        return {err: `unsupported parameter type for ${line.code}: ${arg_type}`};
     },
 
     value: (value) => {
