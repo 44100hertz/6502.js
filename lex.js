@@ -1,11 +1,8 @@
 'use strict';
 
 const lex = {
-    multi_line: (code) => {
-        let lineno = 0;
-        return lex.line_array(code)
-            .map((line) => lex.line(line, ++lineno));
-    },
+    multi_line: (code, lineno = 0) => lex.line_array(code)
+        .map((line) => lex.line(line, ++lineno)),
 
     line_array: (code) => {
         const line_iter = /(.*?)(;.*\n|\n)/mg;
