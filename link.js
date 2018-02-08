@@ -3,19 +3,30 @@
 const link = {
     object: (program) => {
         const labels = {};
-        const pc = link.count(program, labels);
-        const out = new Uint8Array(pc);
+        const size = link.count(program, labels);
+        const out = new Uint8Array(size);
 
+        let pc = 0;
         for (const line of program) {
-            const value = typeof line.value == 'number' ?
-                  line.value : labels[line.value];
+            const num = typeof line.value == 'number' && line.value;
+            const label = labels[line.value];
+
+            const [value, relative] =
+                  num             ? [line.value] :
+                  line.width == 3 ? [label] :
+                  line.width == 2 ? [label - pc - line.width, true] : [];
+
             if (line.width >= 2 && value === undefined) {
                 console.log(`Unknown value or label: ${line.value}`);
-                // error: unknown value or label
             }
             out[line.pc] = line.code;
             switch (line.width) {
             case 2:
+                if (relative
+                    ? (value < -0x80 || value > 0x7f)
+                    : (value < 0 || value > 0xff)) {
+                    console.log(`Overflow on value: ${value}`);
+                }
                 out[line.pc+1] = value;
                 break;
             case 3:
@@ -25,6 +36,8 @@ const link = {
             default:
                 break;
             }
+
+            pc += line.width;
         }
 
         return out;
