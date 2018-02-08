@@ -58,10 +58,14 @@ const assem = {
             if (!value) {
                 return `could not parse value: ${line.arg_data}`;
             }
-            const alt_arg_type = arg_type.replace(
-                'addr', value < 0x100 ? 'zero' : 'abs');
+            const zero_type = arg_type.replace('addr', 'zero');
+            const abs_type = arg_type.replace('addr', 'abs');
+
+            const alt_arg_type = (value && value < 0x100 && code_set[zero_type]) ?
+                  zero_type : abs_type;
 
             const code = code_set[alt_arg_type];
+
             if (code) {
                 return {code, value, width: widths[alt_arg_type]};
             }
