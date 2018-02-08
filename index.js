@@ -22,9 +22,9 @@ const read_file = (err, input) => {
     console.log(program);
     console.log(binary);
 
-    // fs.writeFile(outpath, buf8, (err) => {
-    //     if (err) { throw err; }
-    // });
+    fs.writeFile(outpath, binary, (err) => {
+        if (err) { throw err; }
+    });
 };
 
 fs.readFile(inpath, read_file);
