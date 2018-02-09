@@ -1,18 +1,22 @@
 'use strict';
 
+const codes = require('./codes');
+
+const regex_array = (pat) =>
+      (input) => {
+          const list = [];
+          let item;
+          while ((item = pat.exec(input))) {
+              list.push(item[1]);
+          }
+          return list;
+      };
+
 const lex = {
     multi_line: (code, lineno = 0) => lex.line_array(code)
         .map((line) => lex.line(line, ++lineno)),
 
-    line_array: (code) => {
-        const line_iter = /(.*?)(;.*\n|\n)/mg;
-        const lines = [];
-        let line;
-        while ((line = line_iter.exec(code))) {
-            lines.push(line[1]);
-        }
-        return lines;
-    },
+    line_array: regex_array(/(.*?)(;.*\n|\n)/mg),
 
     line: (line, lineno) => {
         // Matching Rules:
