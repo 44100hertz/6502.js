@@ -8,13 +8,13 @@ const link = {
 
         let pc = 0;
         for (const line of program) {
-            const num = typeof line.value == 'number' && line.value;
+            const num = typeof line.value === 'number' && line.value;
             const label = labels[line.value];
 
             const [value, relative] =
-                  num             ? [line.value] :
-                  line.width == 3 ? [label] :
-                  line.width == 2 ? [label - pc - line.width, true] : [];
+                  num !== undefined ? [line.value] :
+                  line.width === 3  ? [label] :
+                  line.width === 2  ? [label - pc - line.width, true] : [];
 
             if (line.width >= 2 && value === undefined) {
                 console.log(`Unknown value or label: ${line.value}`);
