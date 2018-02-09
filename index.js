@@ -18,9 +18,6 @@ const read_file = (err, input) => {
     const program = assem.program(lexed);
     const binary  = link.object(program);
 
-    console.log(program);
-    console.log(binary);
-
     fs.writeFile(outpath, binary, (err) => {
         if (err) { throw err; }
     });
