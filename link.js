@@ -34,8 +34,8 @@ const link = {
                 out[line.pc+1] = value;
                 break;
             case 3:
-                out[line.pc+1] = value >> 8;
-                out[line.pc+2] = value;
+                out[line.pc+1] = value;
+                out[line.pc+2] = value >> 8;
                 break;
             default:
                 break;
