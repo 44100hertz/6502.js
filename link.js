@@ -12,9 +12,9 @@ const link = {
             const label = labels[line.value];
 
             const [value, relative] =
-                  num !== undefined ? [line.value] :
-                  line.width === 3  ? [label] :
-                  line.width === 2  ? [label - pc - line.width, true] : [];
+                  typeof line.value === 'number' ? [num] :
+                  line.width === 3 ? [label] :
+                  line.width === 2 ? [label - pc - line.width, true] : [];
 
             if (line.width >= 2 && value === undefined) {
                 console.log(`Unknown value or label: ${line.value}`);
