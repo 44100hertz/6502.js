@@ -1,23 +1,27 @@
 'use strict';
 
+const err = require('./err');
+
 const link = {
     object: (program) => {
         const labels = {};
         const size = link.count(program, labels);
-        const out = new Uint8Array(size);
+        return link.make_binary(program, labels, size);
+    },
 
+    make_binary: (program, labels, size) => {
+        const out = new Uint8Array(size);
         let pc = 0;
         for (const line of program) {
-            const num = typeof line.value === 'number' && line.value;
             const label = labels[line.value];
 
             const [value, relative] =
-                  typeof line.value === 'number' ? [num] :
+                  typeof line.value === 'number' ? [line.value] :
                   line.width === 3 ? [label] :
                   line.width === 2 ? [label - pc - line.width, true] : [];
 
             if (line.width >= 2 && value === undefined) {
-                console.log(`Unknown value or label: ${line.value}`);
+                err.log(`Unknown value or label: ${line.value}`, line.lineno);
             }
             out[line.pc] = line.code;
             switch (line.width) {
@@ -25,7 +29,7 @@ const link = {
                 if (relative
                     ? (value < -0x80 || value > 0x7f)
                     : (value < 0 || value > 0xff)) {
-                    console.log(`Overflow on value: ${value}`);
+                    err.log(`Overflow on value: ${value}`, line.lineno);
                 }
                 out[line.pc+1] = value;
                 break;

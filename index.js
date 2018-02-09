@@ -18,7 +18,6 @@ const read_file = (err, input) => {
     const program = assem.program(lexed);
     const binary  = link.object(program);
 
-    console.log(lexed);
     console.log(program);
     console.log(binary);
 

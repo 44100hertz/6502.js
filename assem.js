@@ -1,6 +1,7 @@
 'use strict';
 
 const codes = require('./codes');
+const err = require('./err');
 
 const widths = {
     none:  1, accum: 1,
@@ -9,26 +10,31 @@ const widths = {
 };
 
 const assem = {
-    program: (lexed) => lexed
-        .map((line) => assem.program_line(line)),
+    program: (lexed) =>
+        lexed.map((line) => assem.program_line(line)),
 
-    program_line: (line) => {
+    program_line: (line, errors) => {
         const decoded = assem.decode_line(line);
-        decoded.label = line.label;
-        if (!decoded.width) {
-            decoded.width = 0;
+
+        switch (typeof decoded) {
+        case 'string':
+            err.log(decoded, line.lineno);
+            break;
+        case 'object':
+            decoded.width = decoded.width || 0;
+            return {...line, ...decoded};
         }
-        return decoded;
+        return {...line, width: 0};
     },
 
     decode_line: (line) => {
         if (!line.code) {
-            return {};
+            return undefined;
         }
         const code_set = codes[line.code.toUpperCase()];
 
         if (!code_set) {
-            return {err: `unknown opcode or directive: ${line.code}`};
+            return `unknown opcode or directive: ${line.code}`;
         }
 
         const arg_type = code_set.rela ? 'rela' : line.arg_type;
@@ -46,7 +52,7 @@ const assem = {
             const abs_type = arg_type.replace('addr', 'abs');
 
             if (value === undefined) {
-                return {err: `could not determine width: ${line.arg_data}`};
+                return `could not determine width: ${line.arg_data}`;
             }
 
             const alt_type = (value && value < 0x100 && code_set[zero_type]) ?
@@ -59,7 +65,7 @@ const assem = {
             }
         }
 
-        return {err: `unsupported parameter type for ${line.code}: ${arg_type}`};
+        return `unsupported parameter type for ${line.code}: ${arg_type}`;
     },
 
     value: (value) => {
