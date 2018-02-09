@@ -1,3 +1,6 @@
+loop:
+  beq loop
+
 data0 .dw $80, $20, $0
 data1: .dw $100, $10, $0
 .dw $80, $20, $0
@@ -8,7 +11,7 @@ main2:
   ror a                         ; comment
   ror A                         ; comment
   ror   A                         ; comment
-  ror aardvark
+  ror a
   lda #100
   lda #100 ; comment2
   sta $0
@@ -18,13 +21,13 @@ main2:
   sta 256,x
   sta $100,y
   sta 256,y
-  sta ($100),y
-  sta (256),y
-  sta ($100,x)
-	sta (256,x)
+  sta ($10),y
+  sta (255),y
+  sta ($10,x)
+	sta (255,x)
 
-  sta ( $100, X )
-  sta ( $100 ) , Y
+  sta ( $10, X )
+  sta ( $10 ) , Y
 
   jmp ($10)
   jmp (16)
