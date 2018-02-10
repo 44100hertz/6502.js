@@ -11,14 +11,14 @@ const link = {
 
     make_binary: (program, labels, size) => {
         const out = new Uint8Array(size);
-        let pc = 0;
+
         for (const line of program) {
             const label = labels[line.value];
 
             const [value, relative] =
                   typeof line.value === 'number' ? [line.value] :
                   line.width === 3 ? [label] :
-                  line.width === 2 ? [label - pc - line.width, true] : [];
+                  line.width === 2 ? [label - line.pc - line.width, true] : [];
 
             if (line.width >= 2 && value === undefined) {
                 err.log(`Unknown value or label: ${line.value}`, line.lineno);
@@ -40,8 +40,6 @@ const link = {
             default:
                 break;
             }
-
-            pc += line.width;
         }
 
         return out;
@@ -49,6 +47,9 @@ const link = {
 
     count: (program, labels, pc = 0) => {
         for (const line of program) {
+            if (line.codename == 'ORG') {
+                pc = line.value;
+            }
             if (line.label) {
                 labels[line.label] = pc;
             }

@@ -28,18 +28,20 @@ const assem = {
     },
 
     decode_line: (line) => {
-        if (!line.code) {
+        if (!line.codename) {
             return undefined;
         }
-        const code_set = codes[line.code.toUpperCase()];
+        const code_set = codes[line.codename];
+        const value = assem.value(line.arg_data);
 
-        if (!code_set) {
-            return `unknown opcode or directive: ${line.code}`;
+        if (line.codename == 'ORG') {
+            return {value};
+        } else if (!code_set) {
+            return `unknown opcode or directive: ${line.codename}`;
         }
 
         const arg_type = code_set.rela ? 'rela' : line.arg_type;
         const code = code_set[arg_type];
-        const value = assem.value(line.arg_data);
 
         // 1:1 lexing -> assembly works for many things
         if (code) {
@@ -55,7 +57,7 @@ const assem = {
                 return `could not determine width: ${line.arg_data}`;
             }
 
-            const alt_type = (value && value < 0x100 && code_set[zero_type]) ?
+            const alt_type = (value < 0x100 && code_set[zero_type]) ?
                   zero_type : abs_type;
 
             const code = code_set[alt_type];

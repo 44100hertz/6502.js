@@ -1,9 +1,12 @@
+.org 0
+.org 4
+
 loop:
   beq loop
 
-data0 .dw $80, $20, $0
-data1: .dw $100, $10, $0
-.dw $80, $20, $0
+;; data0 .dw $80, $20, $0
+;; data1: .dw $100, $10, $0
+;; .dw $80, $20, $0
 main ; comment1
 main2:
   main3:

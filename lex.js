@@ -23,16 +23,27 @@ const lex = {
         // label:  start of line, or first word ending in :
         // opcode: indented or ".word" not ending in :
         // arg:    the rest of the line :^)
-        const [, label, code, arg] = /^(\w+|\s+\w+(?=:)|)[\s:\.]*(\w*)(.*)$/
+        const [, label, lowcode, arg] = /^(\w+|\s+\w+(?=:)|)[\s:\.]*(\w*)(.*)$/
               .exec(line)
               .map((s) => s.trim());
 
-        const [arg_type, arg_data] = lex.op_arg(arg);
+        const codename = lowcode.toUpperCase();
+        const [arg_type, arg_data] = lex.argument(codename, arg);
 
-        return {label, code, arg, arg_type, arg_data, lineno};
+        return {label, codename, arg, arg_type, arg_data, lineno};
     },
 
-    op_arg: (arg) => {
+    argument: (code, arg) => {
+        if (codes[code]) {
+            return lex.operator_argument(arg);
+        } else if (code == 'org') {
+            return ['addr', arg];
+        } else {
+            return ['unknown', arg];
+        }
+    },
+
+    operator_argument: (arg) => {
         const patterns = [
             ['indrx', /[(](.*),\s*x\s*[)]/i],
             ['indry', /[(](.*)[)]\s*,\s*y/i],
