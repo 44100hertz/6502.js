@@ -33,11 +33,13 @@ const lex = {
         return {label, codename, arg, arg_type, arg_data, lineno};
     },
 
-    argument: (code, arg) => {
-        if (codes[code]) {
+    argument: (codename, arg) => {
+        if (codes[codename]) {
             return lex.operator_argument(arg);
-        } else if (code == 'org') {
+        } else if (codename == 'ORG') {
             return ['addr', arg];
+        } else if (codename == 'DB' || codename == 'DW') {
+            return ['list', regex_array(/([^\s,]+)/g)(arg)];
         } else {
             return ['unknown', arg];
         }

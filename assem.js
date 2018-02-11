@@ -32,16 +32,20 @@ const assem = {
             return undefined;
         }
         const code_set = codes[line.codename];
-        const value = assem.value(line.arg_data);
 
         if (line.codename == 'ORG') {
-            return {value};
+            return {value: assem.value(line.arg_data)};
+        } else if (line.arg_type == 'list') {
+            const list = line.arg_data.map((v) => assem.value(v));
+            const elemsize = line.codename == 'DW' ? 2 : 1;
+            return {value: list, width: elemsize * list.length};
         } else if (!code_set) {
             return `unknown opcode or directive: ${line.codename}`;
         }
 
         const arg_type = code_set.rela ? 'rela' : line.arg_type;
         const code = code_set[arg_type];
+        const value = assem.value(line.arg_data);
 
         // 1:1 lexing -> assembly works for many things
         if (code) {

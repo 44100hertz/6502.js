@@ -1,6 +1,6 @@
 const err = {
-    log: (msg, lineno, file = '') => {
-        console.error(`${file}(${lineno}): ${msg}`);
+    log: (msg, lineno) => {
+        console.error(`${lineno}: ${msg}`);
     }
 };
 
