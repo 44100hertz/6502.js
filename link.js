@@ -18,7 +18,9 @@ const link = {
                 link.write_arg(line, labels, out, line.value);
             } else if (line.codename == 'DW') {
                 let pc = line.pc;
-                for (const value of line.value) {
+                for (const in_value of line.value) {
+                    const value = typeof in_value == 'number' ?
+                          in_value : labels[in_value];
                     out[pc++] = value;
                     out[pc++] = value >> 8;
                 }

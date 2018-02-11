@@ -8,6 +8,8 @@ data0 .dw $80, $20, $0
 data1: .dw $100, $10, $0
 .db $80, $20, $0
 
+jmptab: dw main, main2, main3
+
 main ; comment1
 main2:
   main3:
