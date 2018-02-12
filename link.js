@@ -2,6 +2,10 @@
 
 const err = require('./err');
 
+const err_unknown_value = (value, lineno) => {
+    err.log(`Unknown value or label: ${value}`, lineno);
+}
+
 const link = {
     object: (program) => {
         const labels = {};
@@ -21,12 +25,18 @@ const link = {
                 for (const in_value of line.value) {
                     const value = typeof in_value == 'number' ?
                           in_value : labels[in_value];
+                    if (value === undefined) {
+                        err_unknown_value(in_value, line.lineno);
+                    }
                     out[pc++] = value;
                     out[pc++] = value >> 8;
                 }
             } else if (line.codename == 'DB') {
                 let pc = line.pc;
                 for (const value of line.value) {
+                    if (typeof value !== 'number') {
+                        err_unknown_value(value, line.lineno);
+                    }
                     out[pc++] = value;
                 }
             }
@@ -44,7 +54,7 @@ const link = {
               line.width === 2 ? [label - line.pc - line.width, true] : [];
 
         if (line.width >= 2 && value === undefined) {
-            err.log(`Unknown value or label: ${arg}`, line.lineno);
+            err_unknown_value(arg, line.lineno);
         }
         switch (line.width) {
         case 2:
