@@ -2,21 +2,10 @@
 
 const codes = require('./codes');
 
-const regex_array = (pat) =>
-      (input) => {
-          const list = [];
-          let item;
-          while ((item = pat.exec(input))) {
-              list.push(item[1]);
-          }
-          return list;
-      };
-
 const lex = {
-    multi_line: (code, lineno = 0, defined = {}) => lex.line_array(code)
+    multi_line: (code, lineno = 0, defined = {}) =>
+        /(?:;.*?\n|\n)/g[Symbol.split](code)
         .map((line) => lex.line(line, ++lineno, defined)),
-
-    line_array: regex_array(/(.*?)(;.*\n|\n)/mg),
 
     line: (line, lineno, defined) => {
         const definition = /(.*)=(.*)/.exec(line);
@@ -50,7 +39,7 @@ const lex = {
         } else if (codename == 'ORG') {
             return ['addr', arg];
         } else if (codename == 'DB' || codename == 'DW') {
-            return ['list', regex_array(/([^\s,]+)/g)(arg)
+            return ['list', /[\s,]+/g[Symbol.split](arg)
                     .map((v) => defined[v] !== undefined ? defined[v] : v)];
         } else {
             return ['unknown', arg];
